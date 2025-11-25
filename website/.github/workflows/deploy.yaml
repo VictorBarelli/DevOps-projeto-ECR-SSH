@@ -1,0 +1,33 @@
+name: PipeLine CI/CD
+
+on:
+   push:
+    branches:
+     - main
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+  job1:
+      name: build_ecr
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout
+          uses: actions/checkout@v5.0.0
+
+
+        - name: "Configure AWS Credentials"
+          uses: aws-actions/configure-aws-credentials@v4.3.1
+          with:
+            role-to-assume: arn:aws:iam::355334485510:role/GitHubActiosRepSSH
+            aws-region: us-east-2
+        
+        - name: 'Amazon ECR "Login" Action for GitHub Actions'
+          uses: aws-actions/amazon-ecr-login@v2.0.1
+
+        - name: build,tag and push image to ECR
+          run: |
+            docker build -t meu-website:v1.0 .
+            docker tag meu-website:v1.0 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+            docker push 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
