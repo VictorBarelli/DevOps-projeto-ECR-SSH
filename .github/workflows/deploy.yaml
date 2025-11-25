@@ -31,3 +31,29 @@ jobs:
             docker build -t meu-website:v1.0 .
             docker tag meu-website:v1.0 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
             docker push 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+
+    job2:
+     name: deploy_ec2
+     env:
+       INSTANCE_KEY: ${{ secrets.INSTANCE_KEY }}
+       IP_PUBLICO: ${{ secrets.IP_PUBLICO }}
+     runs-on: ubuntu-latest
+     steps:
+       - name: Deploy EC2 SSH
+         run:
+          echo "$INSTANCE_KEY" > chave.site.pem
+          ssh -i chave-site-prod.pem ec2_user@IP_PUBLICO << EOF
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 355334485510.dkr.ecr.us-east-2.amazonaws.com
+          docker pull 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+          docker run -d -p 80:80 --meu site 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+          docker ps
+          EOF
+
+          rm chave-site-prod.pem
+
+
+
+
+
+
+
