@@ -36,8 +36,8 @@ jobs:
      name: deploy_ec2
      needs: job1
      env:
-       INSTANCE_KEY: ${{ secrets.INSTANCE_KEY }}
-       IP_PUBLICO: ${{ secrets.IP_PUBLICO }}
+       INSTANCE_KEY: ${{secrets.INSTANCE_KEY }}
+       IP_PUBLICO: ${{secrets.IP_PUBLICO }}
      runs-on: ubuntu-latest
      steps:
        - name: Deploy EC2 SSH
@@ -45,10 +45,10 @@ jobs:
            echo "$INSTANCE_KEY" > chave-site-prod.pem
            chmod 400 web-site-prod.pem
            ssh -i web-site-prod.pem -o StrictHostKeyChecking=no ec2-user@$IP_PUBLICO << EOF
-           aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 355334485510.dkr.ecr.us-east-2.amazonaws.com
-           docker pull 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
-           docker run -d -p 80:80 --name site 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
-           docker ps
+            aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 355334485510.dkr.ecr.us-east-2.amazonaws.com
+            docker pull 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+            docker run -d -p 80:80 --name site 355334485510.dkr.ecr.us-east-2.amazonaws.com/site-prod:v1.0
+            docker ps
            EOF
            rm web-site-prod.pem
 
